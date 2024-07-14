@@ -7,7 +7,7 @@ repositories {
     maven {
         url "https://repo.velocitypowered.com/snapshots/"
     }
-    maven { name 'Jitpack'; url 'https://jitpack.io' }
+
     maven {
         url "https://maven.neoforged.net/releases/"
     }
@@ -44,7 +44,7 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     forge "net.neoforged:forge:${project. minecraft_version}-${project.forge_version}"
 
-    modImplementation forgeRuntimelibrary include  "com.velocitypowered:velocity-native:3.2.0-SNAPSHOT"
+    modImplementation forgeRuntimeLibrary include  "com.velocitypowered:velocity-native:3.2.0-SNAPSHOT"
 }
 
 

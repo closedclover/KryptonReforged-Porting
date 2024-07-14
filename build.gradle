@@ -1,7 +1,6 @@
 plugins {
-    id "dev.architectury.loom" version "0.12.0.290"
+    id "dev.architectury.loom" version "1.5-SNAPSHOT"
     id "maven-publish"
-    id 'com.github.johnrengelman.shadow' version "7.0.0+"
 }
 
 repositories {
@@ -9,25 +8,17 @@ repositories {
         url "https://repo.velocitypowered.com/snapshots/"
     }
     maven { name 'Jitpack'; url 'https://jitpack.io' }
+    maven {
+        url "https://maven.neoforged.net/releases/"
+    }
 }
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
-archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
-
-configurations {
-    bundle {
-        // These two lines aren't technically needed but it's a good practice to have them.
-        canBeResolved = true
-        canBeConsumed = false
-    }
-
-    shade.transitive = false
-
-    // Only if you want your shadowed/bundled dependencies on the classpath:
-    implementation.extendsFrom bundle
+base {
+    archivesName = project.archives_base_name
+    version = project.mod_version
+    group = project.maven_group
 }
 
 loom {
@@ -48,30 +39,12 @@ loom {
     }
 }
 
-repositories {
-    maven {
-        url "https://repo.velocitypowered.com/snapshots/"
-    }
-    maven { name 'Jitpack'; url 'https://jitpack.io' }
-    // in this example, we need the following maven
-    // to satisfy our dependency for JEI.
-    maven {
-        name = "Progwml6 (Just Enough Items)"
-        url = "https://dvs1.progwml6.com/files/maven/"
-    }
-}
-
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    forge "net.minecraftforge:forge:${project.forge_version}"
+    forge "net.neoforged:forge:${project. minecraft_version}-${project.forge_version}"
 
-    def velocity = "com.velocitypowered:velocity-native:3.2.0-SNAPSHOT"
-    modImplementation velocity
-    bundle velocity
-
-    // Include LazyDFU so starting the server and client at the same time doesn't turn my computer into a fighter jet
-    //modRuntime "com.github.astei:lazydfu:${project.lazydfu_version}"
+    modImplementation forgeRuntimelibrary include  "com.velocitypowered:velocity-native:3.2.0-SNAPSHOT"
 }
 
 
@@ -90,27 +63,6 @@ tasks.withType(JavaCompile) {
 
 java {
     withSourcesJar()
-}
-
-shadowJar {
-    configurations = [project.configurations.bundle]
-
-    exclude "guava-25.1-jre.jar"
-    exclude "netty-handler-4.1.52.Final.jar"
-    exclude "checker-qual-3.6.1.jar"
-    exclude "jsr305-3.0.2.jar error"
-    exclude "prone_annotations-2.1.3.jar"
-    exclude "j2objc-annotations-1.1.jar"
-    exclude "animal-sniffer-annotations-1.14.jar"
-    exclude "netty-codec-4.1.52.Final.jar"
-    exclude "netty-transport-4.1.52.Final.jar"
-    exclude "netty-resolver-4.1.52.Final.jar"
-    exclude "netty-buffer-4.1.52.Final.jar"
-    exclude "netty-common-4.1.52.Final.jar"
-    exclude "netty-all-4.1.68.Final.jar"
-    exclude "netty*"
-
-    minimize()
 }
 
 remapJar {

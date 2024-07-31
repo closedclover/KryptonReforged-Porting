@@ -1,13 +1,16 @@
 {
-    "required":           true,
-    "minVersion":         "0.8",
-    "package":            "me.steinborn.krypton.mixin",
-    "compatibilityLevel": "JAVA_16",
-    "plugin":             "me.steinborn.krypton.mod.shared.KryptonMixinPlugin",
-    "client":             [
+    "package": "me.steinborn.krypton.mixin",
+    "required": true,
+    "minVersion": "0.8",
+    "compatibilityLevel": "JAVA_17",
+    "plugin": "me.steinborn.krypton.mod.shared.KryptonMixinPlugin",
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "client": [
         "client.fastchunkentityaccess.ClientWorldMixin"
     ],
-    "mixins":             [
+    "mixins": [
         "server.fastchunkentityaccess.ServerWorldMixin",
         "shared.bugfix.CustomPayloadS2CPacketFixMemoryLeakMixin",
         "shared.debugaid.ResourceLeakDetectorDisableConditionalMixin",
@@ -25,8 +28,5 @@
         "shared.network.pipeline.encryption.ServerLoginNetworkHandlerMixin",
         "shared.network.util.ServerPlayNetworkHandlerAccessor",
         "shared.player.ServerPlayerEntityMixin"
-    ],
-    "injectors":          {
-        "defaultRequire": 1
-    }
+    ]
 }

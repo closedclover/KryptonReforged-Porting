@@ -87,21 +87,21 @@ public abstract class ClientConnectionMixin implements ConfigurableAutoFlush {
         return null;
     }
 
-    private void doSendPacket(Packet<?> packet, PacketCallbacks callback) {
+    private void doSendPacket(Packet<?> packet, @Nullable PacketCallbacks callback) {
         if (callback == null) {
             this.channel.write(packet, this.channel.voidPromise());
         } else {
             ChannelFuture channelFuture = this.channel.write(packet);
             channelFuture.addListener(listener -> {
-              if (listener.isSuccess()) {
-                callback.onSuccess();
-              } else {
-                Packet<?> failedPacket = callback.getFailurePacket();
-                if (failedPacket != null) {
-                  ChannelFuture failedChannelFuture = this.channel.writeAndFlush(failedPacket);
-                  failedChannelFuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+                if (listener.isSuccess()) {
+                    callback.onSuccess();
+                } else {
+                    Packet<?> failedPacket = callback.getFailurePacket();
+                    if (failedPacket != null) {
+                        ChannelFuture failedChannelFuture = this.channel.writeAndFlush(failedPacket);
+                        failedChannelFuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+                    }
                 }
-              }
             });
             channelFuture.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
         }

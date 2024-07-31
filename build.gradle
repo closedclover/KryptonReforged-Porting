@@ -5,7 +5,7 @@ plugins {
 
 repositories {
     maven {
-        url "https://repo.velocitypowered.com/snapshots/"
+        url "https://papermc.io/repo/repository/maven-public/"
     }
 
     maven {
@@ -17,12 +17,13 @@ sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
 base {
     archivesName = project.archives_base_name
-    version = project.mod_version
+    version = project.mod_version + "+mc" + project.minecraft_version + "-real"
     group = project.maven_group
 }
 
 loom {
     forge {
+        convertAccessWideners = true
         mixinConfigs = [
                 "krypton.mixins.json"
         ]
@@ -32,22 +33,23 @@ loom {
         }
     }
 
-    launches {
-        data {
-            arg "--existing", file("src/main/resources").absolutePath
-        }
-    }
+    accessWidenerPath = file("src/main/resources/krypton.accesswidener")
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    forge "net.neoforged:forge:${project. minecraft_version}-${project.forge_version}"
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0-M1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0-M1")
 
-    modImplementation forgeRuntimeLibrary include  "com.velocitypowered:velocity-native:3.2.0-SNAPSHOT"
+    minecraft("com.mojang:minecraft:${project.minecraft_version}")
+    mappings("net.fabricmc:yarn:${project.yarn_mappings}:v2")
+    forge("net.neoforged:forge:${project. minecraft_version}-${project.forge_version}")
+
+    modImplementation(forgeRuntimeLibrary(include("com.velocitypowered:velocity-native:3.2.0-SNAPSHOT"))) { transitive = false }
 }
 
-
+test {
+    useJUnitPlatform()
+}
 
 processResources {
     inputs.property "version", project.version
@@ -63,11 +65,6 @@ tasks.withType(JavaCompile) {
 
 java {
     withSourcesJar()
-}
-
-remapJar {
-    dependsOn(shadowJar)
-    input = shadowJar.archiveFile
 }
 
 jar {
@@ -88,14 +85,28 @@ jar {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
+            from components.java
+            artifactId = base.archivesName.get()
+        }
+    }
+}
+
+afterEvaluate {
+    tasks.getByName("configureClientLaunch").doFirst {
+        loom {
+            runs {
+                all {
+                    property("fabric.development=true")
+                    property("mixin.hotSwap")
+                    // vmArg("-javaagent:${dependencies.module(group = "net.fabricmc", name = "sponge-mixin")}")
+                    def mixinJarFile = configurations.compileClasspath.files {
+                        it.group == "net.fabricmc" && it.name == "sponge-mixin"
+                    }.find { true }
+                    vmArg("-javaagent:$mixinJarFile")
+
+                    ideConfigGenerated = true
+                }
             }
         }
     }
-
-    repositories {}
 }

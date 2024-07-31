@@ -1,7 +1,6 @@
 package me.steinborn.krypton.mod.shared;
 
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.LoadingModList;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -21,10 +20,10 @@ public class KryptonMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        //if (mixinClassName.contains("avoidwork.ThreadedAnvilChunkStorageMixin")) {
-        //    // This mixin is incompatible with Immersive Portals.
-        //    return !ModList.get().isLoaded("imm_ptl_core");
-        //}
+        if (mixinClassName.contains("avoidwork.ThreadedAnvilChunkStorageMixin")) {
+            // This mixin is incompatible with Immersive Portals.
+            return !(LoadingModList.get().getModFileById("imm_ptl_core") == null);
+        }
         return true;
     }
 

@@ -42,7 +42,7 @@ dependencies {
 
     minecraft("com.mojang:minecraft:${project.minecraft_version}")
     mappings("net.fabricmc:yarn:${project.yarn_mappings}:v2")
-    forge("net.neoforged:forge:${project. minecraft_version}-${project.forge_version}")
+    forge("net.neoforged:forge:${project.minecraft_version}-${project.forge_version}")
 
     modImplementation(forgeRuntimeLibrary(include("com.velocitypowered:velocity-native:3.2.0-SNAPSHOT"))) { transitive = false }
 }
@@ -61,6 +61,10 @@ processResources {
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
     options.release = 17
+}
+
+tasks.withType(Jar) {
+    from "LICENSE"
 }
 
 java {
